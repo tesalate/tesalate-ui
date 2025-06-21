@@ -1,17 +1,17 @@
-import React, { } from 'react';
+import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { RootState } from '../../redux/reducers';
 import { useSelector } from 'react-redux';
+import { ChartData } from 'chart.js';
 
 interface BarGraphDataProps {
-  data   : Record<any, any>
-  style? : Record<any, any>
-  type?  : 'drive' | 'charge'
-  unit   : string
+  data: ChartData<'bar', number[], unknown>;
+  style?: Record<any, any>;
+  type?: 'drive' | 'charge';
+  unit: string;
 }
 
-
-const BarGraph: React.FC<BarGraphDataProps> = ({ data : shapedData, style={}, unit}) => {
+const BarGraph: React.FC<BarGraphDataProps> = ({ data: shapedData, style = {}, unit }) => {
   const {
     uiState: { theme },
   } = useSelector(({ uiState }: RootState) => ({
@@ -21,37 +21,35 @@ const BarGraph: React.FC<BarGraphDataProps> = ({ data : shapedData, style={}, un
   }));
 
   const options = {
-    maintainAspectRatio : false,
+    maintainAspectRatio: false,
     interaction: {
-        mode: 'index',
-        axis: 'y',
-        position:"nearest",
-      
-      intersect: true
+      mode: 'index',
+      axis: 'y',
+      position: 'nearest',
 
+      intersect: true,
     },
     normalized: true,
     spanGaps: true,
-      plugins: {
-          tooltip: {
-              callbacks: {
-                  label: function(context:any) {
-                      var label = context.dataset.label ?? '';
-                      if (label) {
-                          label += ' : ';
-                      }
-                      label += context.parsed.y ? `${context.parsed.y.toFixed(2)} ${unit}` : '(no data)'
-                      return label;
-                  }
-              }
-          }
-      }
-
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context: any) {
+            var label = context.dataset.label ?? '';
+            if (label) {
+              label += ' : ';
+            }
+            label += context.parsed.y ? `${context.parsed.y.toFixed(2)} ${unit}` : '(no data)';
+            return label;
+          },
+        },
+      },
+    },
   };
 
   return (
-    <div className={theme === "dark" ? "":""}  style={{ ...style }} >
-        <Bar type="bar" data={shapedData} options={options}/>
+    <div className={theme === 'dark' ? '' : ''} style={{ ...style }}>
+      <Bar data={shapedData as any} options={options as any} />
     </div>
   );
 };

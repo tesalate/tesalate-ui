@@ -12,11 +12,11 @@ export const getLogs = async (payload: { vehicle: any; startDate: any; endDate: 
 };
 
 export const getSessions = async (query: SessionQuery) => {
-  const { id, sortBy, type, ...rest } = query;
+  const { id, sortBy, type, vehicle, ...rest } = query;
   let url = `${apiEndpoint}`;
   if (id) url += `/${id}`;
   const searchParams = new URLSearchParams({ sortBy: sortBy || '_id:desc', ...rest });
-  const response = await http.get(`${url}?type=${type}&${searchParams.toString()}`);
+  const response = await http.get(`${url}?vehicle=${vehicle}&type=${type}&${searchParams.toString()}`);
   return response;
 };
 

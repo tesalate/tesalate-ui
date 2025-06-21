@@ -39,9 +39,11 @@ const ErrorModal: React.FC<IModalProps> = ({ theme }) => {
           </p>
           <Row className="d-flex justify-space-between m-0 p-0">
             <Col className="m-0 p-0">
-              <Button size={'sm'} variant={theme === 'light' ? 'outline-dark' : 'outline-light'} as={Link} to={'/logout'}>
-                Log Out
-              </Button>
+              <Link to="/logout">
+                <Button size={'sm'} variant={theme === 'light' ? 'outline-dark' : 'outline-light'}>
+                  Log Out
+                </Button>
+              </Link>
             </Col>
           </Row>
         </Modal.Body>

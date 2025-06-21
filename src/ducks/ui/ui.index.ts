@@ -2,10 +2,10 @@
 type Axis = 'width' | 'height';
 
 export const sessionsViewArr = ['table', 'map'] as const;
-export type sessionsView = typeof sessionsViewArr[number];
+export type sessionsView = (typeof sessionsViewArr)[number];
 
 export const ThemeTypeArr = ['light', 'dark'] as const;
-export type ThemeType = typeof ThemeTypeArr[number];
+export type ThemeType = (typeof ThemeTypeArr)[number];
 /* ===== INTERFACE_DEFINITION =====*/
 export interface State {
   lastRefresh: Date;
@@ -33,6 +33,7 @@ export interface State {
   map: {
     distanceBetween: number;
   };
+  selectedVehicles: string[];
 }
 
 export interface Action {
@@ -79,6 +80,8 @@ export const initialState: State = {
     VerifyRequest: [],
     RegisterUser: [],
     Logs: [],
+    SendCode: [],
+    VehiclesUpdating: [],
   },
   theme: undefined,
   autoTheme: true,
@@ -92,6 +95,7 @@ export const initialState: State = {
   map: {
     distanceBetween: 12,
   },
+  selectedVehicles: [],
 };
 
 /* ===== TYPES ===== */

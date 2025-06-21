@@ -4,7 +4,7 @@ import Moment from 'react-moment';
 
 // COMPONENTS
 import { cToF } from '../../../utils/convert';
-import { numberWithCommas } from '../../../utils/formatFunctions';
+import { numberWithCommas, shortenNumber } from '../../../utils/formatFunctions';
 import { usePreloadImages } from '../../../utils/customHooks';
 
 // IMAGES
@@ -112,11 +112,10 @@ const CurrentInfo = ({ theme, data }: any) => {
 
   const {
     charge_state: { charging_state, usable_battery_level, battery_level, timestamp, est_battery_range } = { charging_state: null, usable_battery_level: null, battery_level: null, timestamp: null, est_battery_range: null },
-    vehicle_state: { sentry_mode, locked, odometer, car_version } = { sentry_mode: null, locked: null, odometer: null, car_version: null },
+    vehicle_state: { sentry_mode, locked, odometer, car_version, vehicle_name } = { sentry_mode: null, locked: null, odometer: null, car_version: null, vehicle_name: null },
     climate_state: { is_climate_on, inside_temp, outside_temp } = { is_climate_on: null, inside_temp: null, outside_temp: null },
     status = null,
     collectData = null,
-    display_name = null,
     error = false,
     count = null,
     idx,
@@ -133,7 +132,7 @@ const CurrentInfo = ({ theme, data }: any) => {
     lineHeight: '20px',
   };
 
-  const infoToDisplay: Array<IFlatInfoCompProps> = useMemo(
+  const infoToDisplay: IFlatInfoCompProps[] = useMemo(
     () =>
       error
         ? [
@@ -151,13 +150,13 @@ const CurrentInfo = ({ theme, data }: any) => {
         : [
             {
               text:
-                display_name === null ? (
+                vehicle_name === null ? (
                   <ThemedSkeleton />
                 ) : (
                   <Row key={'vehicle-title'} className="d-flex justify-content-between">
                     {' '}
                     <Col xs={6} sm={6} md={6} className="text-start pe-0">
-                      {display_name}
+                      {vehicle_name}
                     </Col>{' '}
                     <Col className="text-end ps-0" xs={6} sm={6} md={6} style={{ color: status ? getStatusColor(status) : 'black' }}>
                       {status || 'offline'}
@@ -322,7 +321,7 @@ const CurrentInfo = ({ theme, data }: any) => {
                   <Row key={'climate-title'} className="d-flex justify-content-between">
                     {' '}
                     <Col xs={6} md={6} className="text-start pe-0">
-                      {numberWithCommas(count)}
+                      {shortenNumber(count)}
                     </Col>{' '}
                     <Col className="text-end ps-0" xs={6} md={6} style={{ color: collectData ? 'green' : 'red' }}>
                       {collectData ? 'on' : 'off'}
@@ -336,7 +335,7 @@ const CurrentInfo = ({ theme, data }: any) => {
                     docs saved
                   </Col>{' '}
                   <Col className="text-end ps-0" xs={6} md={6}>
-                    data collections
+                    data collection
                   </Col>
                 </Row>
               ),
@@ -348,19 +347,19 @@ const CurrentInfo = ({ theme, data }: any) => {
               },
             },
           ],
-    [error, battery_level, charging_state, commonLabelStyle, commonTextStyle, display_name, est_battery_range, inside_temp, is_climate_on, locked, odometer, outside_temp, sentry_mode, status, theme, usable_battery_level, count, collectData]
+    [error, battery_level, charging_state, commonLabelStyle, commonTextStyle, vehicle_name, est_battery_range, inside_temp, is_climate_on, locked, odometer, outside_temp, sentry_mode, status, theme, usable_battery_level, count, collectData]
   );
 
   interface CustomToggleProps {
-    children: React.ReactChild | React.ReactChildren;
+    children: typeof React.Children;
     eventKey: string;
   }
   const CustomToggle = ({ children, eventKey }: CustomToggleProps) => {
     const decoratedOnClick = useAccordionButton(eventKey);
 
     return (
-      <Button variant={theme} type="Button" className="p-0 m-0" style={{ minWidth: '100%', backgroundColor: 'rgba(255, 255, 255, 0)', border: 'none' }} onClick={decoratedOnClick}>
-        {children}
+      <Button variant={theme} className="p-0 m-0" style={{ minWidth: '100%', backgroundColor: 'rgba(255, 255, 255, 0)', border: 'none' }} onClick={decoratedOnClick}>
+        <>{children}</>
       </Button>
     );
   };
@@ -400,7 +399,7 @@ const CurrentInfo = ({ theme, data }: any) => {
 
 export default CurrentInfo;
 
-function display(infoToDisplay: IFlatInfoCompProps[], idx: any): React.ReactChild | React.ReactChildren {
+function display(infoToDisplay: IFlatInfoCompProps[], idx: any): any {
   return (
     <div style={{ width: '100%' }}>
       {infoToDisplay.map((el, _idx) => {

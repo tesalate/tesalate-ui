@@ -6,11 +6,11 @@ import { actions as driveSessionActions } from '../../../ducks/driveSessions/dri
 import { timeConversion } from '../../../utils/convert';
 
 interface DriveSessionsTableProps {
-  sessions: Array<any>;
+  sessions: any[];
   loading: boolean;
   pageSizeFromState: number;
   pageIndexFromState: number;
-  sortBy: Array<Record<any, any>>;
+  sortBy: Record<any, any>[];
   sessionData: Record<any, any>;
   error: boolean;
   totalPages: number;

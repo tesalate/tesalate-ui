@@ -4,7 +4,7 @@
 #########################
 
 # base image
-FROM node:16-alpine as builder
+FROM node:22-alpine as builder
 
 WORKDIR /app
 
@@ -31,7 +31,7 @@ RUN  yarn build
 ##################
 
 # base image
-FROM nginx:1.21.0-alpine
+FROM nginx:1.27.0-alpine
 
 COPY nginx.conf /etc/nginx/nginx.conf
 

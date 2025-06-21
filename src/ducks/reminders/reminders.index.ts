@@ -37,13 +37,13 @@ export enum ActionTypes {
 /* ===== ACTION_CREATORS ===== */
 export const actions = {
   requestReminders: (vehicle: string): Action => ({ type: ActionTypes.REQUEST_REMINDERS, payload: vehicle }),
-  setReminders: (value: Array<IReminder>): Action => ({ type: ActionTypes.SET_REMINDERS, payload: value }),
+  setReminders: (value: IReminder[]): Action => ({ type: ActionTypes.SET_REMINDERS, payload: value }),
   setRemindersError: (value: boolean): Action => ({ type: ActionTypes.SET_REMINDERS_ERROR, payload: value }),
 };
 
 /* ===== SELECTORS ===== */
 export const selectors = {
-  getRemindersByVID: (reminders: Record<any, any>, vehicles: Array<any>, miles: Array<number>) =>
+  getRemindersByVID: (reminders: Record<any, any>, vehicles: any[], miles: number[]) =>
     vehicles
       .map((vehicle: string, idx: number) => {
         let v = reminders[vehicle] ?? [];

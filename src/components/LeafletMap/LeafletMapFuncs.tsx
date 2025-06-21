@@ -1,7 +1,7 @@
 import { objectIdToCreationDate } from '../../utils/convert';
 import { numberWithCommas } from '../../utils/formatFunctions';
 
-export const mapPointsToGeoJSON = (mapPoints: Array<any>) => {
+export const mapPointsToGeoJSON = (mapPoints: any[]) => {
   return mapPoints.map((el, idx) => {
     return {
       type: 'Feature',

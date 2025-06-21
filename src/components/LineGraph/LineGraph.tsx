@@ -9,7 +9,7 @@ interface LineGraphDataProps {
   data: Record<any, any>;
   style?: Record<any, any>;
   type?: 'drive' | 'charge';
-  colors: Array<Record<'backgroundColor' | 'borderColor' | 'pointBorderColor' | 'pointHoverBackgroundColor' | 'pointHoverBorderColor', string>>;
+  colors: Record<'backgroundColor' | 'borderColor' | 'pointBorderColor' | 'pointHoverBackgroundColor' | 'pointHoverBorderColor', string>[];
 }
 
 const LineGraph: React.FC<LineGraphDataProps> = ({ data: { labels = [], datasets = [] }, style = {}, type, colors }) => {
@@ -139,7 +139,7 @@ const LineGraph: React.FC<LineGraphDataProps> = ({ data: { labels = [], datasets
 
   return (
     <div className={theme === 'dark' ? '' : ''} style={{ ...style }}>
-      <Line type="line" data={shapedData} options={options} />
+      <Line data={shapedData} options={options as any} />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { put, call, select } from 'redux-saga/effects';
 import * as Eff from 'redux-saga/effects';
-import { getCompleteDataPoint, getMostRecentDataPoint } from './completeDataPoints.api';
+import { getCompleteDataPoint, getDocCount } from './completeDataPoints.api';
 import { actions as completeDataPointsActions, ActionTypes as completeDataPointsActionTypes } from './completeDataPoints.index';
 import { actions as vehicleActions, selectors as vehicleSelectors } from '../vehicles/vehicles.index';
 import { actions as uiActions } from '../ui/ui.index';
@@ -44,41 +44,41 @@ export function* fetchCompleteDataPoints(action: any) {
   }
 }
 
-export function* fetchMostRecentDataPoints(action: any) {
-  try {
-    const { error, mostRecent, isConnected } = yield select(({ completeDataPointsState, uiState }: RootState) => ({
-      error: completeDataPointsState.completeDataPointsError,
-      mostRecent: completeDataPointsState.mostRecent,
-      isConnected: uiState.isConnected,
-    }));
+// export function* fetchMostRecentDataPoints(action: any) {
+//   try {
+//     const { error, mostRecent, isConnected } = yield select(({ completeDataPointsState, uiState }: RootState) => ({
+//       error: completeDataPointsState.completeDataPointsError,
+//       mostRecent: completeDataPointsState.mostRecent,
+//       isConnected: uiState.isConnected,
+//     }));
 
-    if (error) yield put(completeDataPointsActions.setCompleteDataPointsError(false));
+//     if (error) yield put(completeDataPointsActions.setCompleteDataPointsError(false));
 
-    yield put(uiActions.setComponentLoading(loadingName));
+//     yield put(uiActions.setComponentLoading(loadingName));
 
-    if (isConnected || isEmpty(mostRecent[action.payload.vid])) {
-      const {
-        data: {
-          results: [data],
-          totalResults,
-        },
-      } = yield call(getMostRecentDataPoint, action.payload.vid);
-      yield put(completeDataPointsActions.setCompleteDataPoint(data._id, data));
-      yield put(completeDataPointsActions.setCompleteDataPointCount(action.payload.vid, totalResults));
-      yield put(completeDataPointsActions.setMostRecent(action.payload.vid, data._id));
-    }
-  } catch (error) {
-    // handle ui effects
-    yield put(completeDataPointsActions.setCompleteDataPointsError(true));
-    // console.log("FIRCKIN ERROR", error)
+//     if (isConnected || isEmpty(mostRecent[action.payload.vid])) {
+//       const {
+//         data: {
+//           results: [data],
+//           totalResults,
+//         },
+//       } = yield call(getMostRecentDataPoint, action.payload.vid);
+//       yield put(completeDataPointsActions.setCompleteDataPoint(data._id, data));
+//       yield put(completeDataPointsActions.setCompleteDataPointCount(action.payload.vid, totalResults));
+//       yield put(completeDataPointsActions.setMostRecent(action.payload.vid, data._id));
+//     }
+//   } catch (error) {
+//     // handle ui effects
+//     yield put(completeDataPointsActions.setCompleteDataPointsError(true));
+//     // console.log("FIRCKIN ERROR", error)
 
-    // // send error report
-    // const entireState = yield select();
-    // yield put(errorActions.raiseError({error, entireState}));
-  } finally {
-    yield put(uiActions.removeComponentLoading(loadingName));
-  }
-}
+//     // // send error report
+//     // const entireState = yield select();
+//     // yield put(errorActions.raiseError({error, entireState}));
+//   } finally {
+//     yield put(uiActions.removeComponentLoading(loadingName));
+//   }
+// }
 
 export function* fetchHomePageData() {
   try {
@@ -105,15 +105,12 @@ export function* fetchHomePageData() {
 
         const { data: v } = yield call(getVehicles, vehicle);
         yield put(vehicleActions.setVehicleProperty({ ...v }));
-
-        const {
-          data: {
-            results: [data],
-            totalResults,
-          },
-        } = yield call(getMostRecentDataPoint, vehicle);
+        const { data } = yield call(getCompleteDataPoint, v.lastSavedDataPoint, vehicle);
         yield put(completeDataPointsActions.setCompleteDataPoint(data._id, data));
-        yield put(completeDataPointsActions.setCompleteDataPointCount(vehicle, totalResults));
+        const {
+          data: { data: result },
+        } = yield call(getDocCount, vehicle);
+        yield put(completeDataPointsActions.setCompleteDataPointCount(vehicle, result));
         yield put(completeDataPointsActions.setMostRecent(vehicle, data._id));
 
         const {
@@ -136,7 +133,7 @@ export function* fetchHomePageData() {
 export default function completeDataPointsSagas() {
   return [
     takeEvery(completeDataPointsActionTypes.REQUEST_DATA_POINT, fetchCompleteDataPoints),
-    takeEvery(completeDataPointsActionTypes.REQUEST_MR_DATA_POINT, fetchMostRecentDataPoints),
+    // takeEvery(completeDataPointsActionTypes.REQUEST_MR_DATA_POINT, fetchMostRecentDataPoints),
     takeEvery(completeDataPointsActionTypes.REQUEST_HOMEPAGE_DATA, fetchHomePageData),
   ];
 }

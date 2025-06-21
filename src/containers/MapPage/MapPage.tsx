@@ -44,11 +44,11 @@ const MapPage: React.FC = () => {
   const mapProps = useMemo(
     () => ({
       style: {
-        height: '100vh',
-        width: '100vw',
+        height: '100%',
+        width: '100%',
         padding: 0,
         margin: 0,
-        position: 'absolute',
+        position: 'fixed',
         left: 0,
         top: 0,
         zIndex: 0,

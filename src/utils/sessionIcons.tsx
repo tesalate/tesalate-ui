@@ -29,7 +29,7 @@ const sessionIcons = new Map([
   [
     'sentry',
     <span className="me-2" role="img" aria-label="sentry">
-      🔴
+      👁️
     </span>,
   ],
   [

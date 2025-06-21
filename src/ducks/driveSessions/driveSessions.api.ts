@@ -11,11 +11,11 @@ export interface driveSessionQuery {
 }
 
 export const getDriveData = async (query: driveSessionQuery) => {
-  const { id, sortBy, ...rest } = query;
+  const { id, sortBy, vehicle, ...rest } = query;
   let url = `${apiEndpoint}`;
   if (id) url += `/${id}`;
   const searchParams = new URLSearchParams({ sortBy: sortBy || '_id:desc', ...rest });
-  const response = await http.get(`${url}?type=drive&${searchParams.toString()}`);
+  const response = await http.get(`${url}?vehicle=${vehicle}&type=drive&${searchParams.toString()}`);
   return response;
 };
 

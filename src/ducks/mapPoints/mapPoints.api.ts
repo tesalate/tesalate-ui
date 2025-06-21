@@ -4,6 +4,6 @@ const apiEndpoint = '/map-points';
 
 export const getMapPoints = async (filterBool: boolean, vid: string, km: number) => {
   let url = `${apiEndpoint}`;
-  if (filterBool) return await http.get(`${url}/distance/?km=${km}&vehicle=${vid}`);
+  if (filterBool) return await http.get(`${url}/distance/?vehicle=${vid}&km=${km}`);
   return await http.get(`${url}/?vehicle=${vid}&sortBy=updatedAt:desc`);
 };

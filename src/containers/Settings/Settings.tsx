@@ -63,6 +63,8 @@ const Settings: React.FC = () => {
 
   const handleVehicleChange = (val: string) => {
     dispatch(vehiclesActions.setSelectedVehicles(val));
+    const dispatchObj: Partial<UIState> = { selectedVehicles: [val] };
+    dispatch(uiActions.setDBUiSettings(dispatchObj));
   };
 
   const tabs = [

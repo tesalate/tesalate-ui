@@ -16,7 +16,7 @@ const SignUpComp = () => {
   const { token: inviteToken }: { token: string } = useParams();
   let email = undefined;
   if (inviteToken) {
-    const { sub } = jwt_decode(inviteToken);
+    const { sub }: { sub: string } = jwt_decode(inviteToken);
     email = sub;
   }
   const { loading, errorMessage, user } = useSelector(({ uiState, userState }: RootState) => ({
@@ -150,7 +150,7 @@ const SignUpComp = () => {
                 />
 
                 <Form.Control.Feedback type="invalid">
-                  <small>{formik.errors.email}</small>
+                  <small>{formik?.errors?.email}</small>
                 </Form.Control.Feedback>
                 {errorMessage?.toLowerCase().includes('email') && (
                   <div style={{ color: 'red', fontSize: '.8rem' }} className="w-100 text-center">

@@ -9,17 +9,17 @@ export interface chargeSessionQuery {
   page: string;
 }
 export const getPaginatedChargeData = async (vid: string, skip: number, limit: number) => {
-  let url = `${apiEndpoint}?type=charge&vehicle=${vid}&skip=${skip}&limit=${limit}`;
+  let url = `${apiEndpoint}?vehicle=${vid}&type=charge&skip=${skip}&limit=${limit}`;
   const response = await http.get(url);
   return response;
 };
 
 export const getChargeData = async (query: chargeSessionQuery) => {
-  const { id, sortBy, ...rest } = query;
+  const { id, sortBy, vehicle, ...rest } = query;
   let url = `${apiEndpoint}`;
   if (id) url += `/${id}`;
   const searchParams = new URLSearchParams({ sortBy: sortBy || '_id:desc', ...rest });
-  const response = await http.get(`${url}?type=charge&${searchParams.toString()}`);
+  const response = await http.get(`${url}?vehicle=${vehicle}&type=charge&${searchParams.toString()}`);
   return response;
 };
 

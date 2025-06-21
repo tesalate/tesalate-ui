@@ -2,6 +2,7 @@ import { put, call, select } from 'redux-saga/effects';
 import * as Eff from 'redux-saga/effects';
 import { getSettings, updateSettings } from './ui.api';
 import { actions as uiActions, ActionTypes as uiTypes } from './ui.index';
+import { IVehicle, actions as vehiclesActions } from '../vehicles/vehicles.index';
 import { RootState } from '../../redux/reducers';
 import { removeEmpty } from '../../utils/formatFunctions';
 
@@ -10,16 +11,20 @@ const loadingName = 'UI';
 
 export function* fetchUiSettings() {
   try {
-    const { error, isMobile, mobileType } = yield select(({ uiState }: RootState) => ({
+    const { error, isMobile, mobileType, selectedVehicles } = yield select(({ uiState, vehiclesState }: RootState) => ({
       error: uiState.uiError,
       isMobile: uiState.isMobile,
       mobileType: uiState.mobileType,
+      selectedVehicles: vehiclesState.vehicles.some((vehicle: IVehicle) => vehicle?.selected === true),
     }));
     if (error) yield put(uiActions.setUiError(false));
 
     yield put(uiActions.setComponentLoading(loadingName));
     const { data } = yield call(getSettings, isMobile);
     const newData = removeEmpty(isMobile ? data[mobileType]['ui'] : data['desktop']['ui']);
+    if (newData.selectedVehicles?.[0] && !selectedVehicles) {
+      yield put(vehiclesActions.setSelectedVehicles(newData.selectedVehicles[0]));
+    }
     if (newData?.theme) {
       yield put(uiActions.setTheme(newData.theme));
     }

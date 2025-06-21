@@ -43,6 +43,11 @@ const DriveSessions: React.FC = () => {
     vehicles: vehiclesState.vehicles,
   }));
   const currentVehicles = useMemo(() => vehicleSelectors.getSelectedVehicles(vehicles), [vehicles]);
+  const sortByRef = React.useRef(sortBy);
+
+  useEffect(() => {
+    sortByRef.current = sortBy;
+  }, [sortBy]);
 
   useEffect(() => {
     if (currentVehicles.length > 0 && pageHasFocus) {
@@ -52,12 +57,12 @@ const DriveSessions: React.FC = () => {
             vehicle,
             limit: pageSizeFromState.toString(),
             page: (pageIndexFromState + 1).toString(),
-            sortBy: objArrToSortByString(sortBy),
+            sortBy: objArrToSortByString(sortByRef.current),
           })
         );
       });
     }
-  }, [dispatch, pageHasFocus, currentVehicles, pageSizeFromState, pageIndexFromState, sortBy]);
+  }, [dispatch, pageHasFocus, currentVehicles, pageSizeFromState, pageIndexFromState, sortByRef]);
 
   const selectedSession = useMemo(() => selectors.selectedDriveSession(id, sessionData), [id, sessionData]);
 

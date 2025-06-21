@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 import { SessionRouteParams } from '../types';
 import { objArrToSortByString } from '../../utils/convert';
 import { SessionType } from '../../ducks/sessions/sessions.index';
+// import { isEqual } from 'lodash';
 
 const CircleMap = lazy(() => import('../../components/CircleMap/CircleMap'));
 const SessionNavigation = lazy(() => import('../../components/SessionNavigation/SessionNavigation'));
@@ -53,6 +54,11 @@ const ChargeSessions: React.FC = () => {
   }));
 
   const currentVehicles = useMemo(() => vehicleSelectors.getSelectedVehicles(vehicles), [vehicles]);
+  const sortByRef = React.useRef(sortBy);
+
+  useEffect(() => {
+    sortByRef.current = sortBy;
+  }, [sortBy]);
 
   useEffect(() => {
     if (currentVehicles.length > 0 && pageHasFocus) {
@@ -62,12 +68,12 @@ const ChargeSessions: React.FC = () => {
             vehicle,
             limit: pageSizeFromState.toString(),
             page: (pageIndexFromState + 1).toString(),
-            sortBy: view === 'map' ? 'createdAt:desc' : objArrToSortByString(sortBy),
+            sortBy: view === 'map' ? 'createdAt:desc' : objArrToSortByString(sortByRef.current),
           })
         );
       });
     }
-  }, [dispatch, pageHasFocus, currentVehicles, pageSizeFromState, pageIndexFromState, sortBy, view]);
+  }, [dispatch, pageHasFocus, currentVehicles, pageSizeFromState, pageIndexFromState, sortByRef, view]);
 
   const selectedSession = useMemo(() => selectors.selectedChargeSession(id, sessionData), [id, sessionData]);
   const sessions = useMemo(() => selectors.getChargeSessions(currentVehicles, sessionsObj), [currentVehicles, sessionsObj]);

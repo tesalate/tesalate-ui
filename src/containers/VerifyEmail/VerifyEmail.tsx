@@ -25,9 +25,11 @@ const VerifyEmail: React.FC = () => {
   }, [dispatch, token]);
 
   const returnHomeButton = (
-    <Button variant="link" size="sm" as={Link} to={'/'}>
-      Return home
-    </Button>
+    <Link to="/">
+      <Button variant="link" size="sm">
+        Return home
+      </Button>
+    </Link>
   );
 
   let content;

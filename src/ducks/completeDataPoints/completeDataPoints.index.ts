@@ -1,6 +1,8 @@
 /* ===== TYPE_DEFINITION =====*/
 export interface IDataPoints {
-  [key: string]: {} | undefined;
+  [key: string]: {
+    [key: string]: any;
+  };
 }
 
 /* ===== INTERFACE_DEFINITION =====*/

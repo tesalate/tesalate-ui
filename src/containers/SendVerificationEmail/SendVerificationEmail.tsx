@@ -23,9 +23,11 @@ const SendVerificationEmail: React.FC = () => {
   }, [dispatch, isVerified, sent]);
 
   const returnHomeButton = (
-    <Button variant="outline-secondary" size="sm" as={Link} to={'/'} className="mt-2">
-      Return home
-    </Button>
+    <Link to="/">
+      <Button variant="outline-secondary" size="sm" className="mt-2">
+        Return home
+      </Button>
+    </Link>
   );
 
   let content;

@@ -6,10 +6,12 @@ import { selectors as vehicleSelectors } from '../../ducks/vehicles/vehicles.ind
 import { Row, Col, ButtonGroup, Button, Spinner } from 'react-bootstrap';
 import BarGraph from '../../components/BarGraph/BarGraph';
 import { titleCase } from '../../utils/convert';
+import { colors, rgbaColors } from './colors';
+import { ChartData } from 'chart.js';
 
 const Stats: React.FC = () => {
   const dispatch = useDispatch();
-  const [vehicleStats, setVehicleStats] = useState<Array<IStatsObj>>([]);
+  const [vehicleStats, setVehicleStats] = useState<IStatsObj[]>([]);
   const [selectedStat, setSelectedStat] = useState<StatTypes>((sessionStorage.getItem('selectedStat') as StatTypes) ?? StatTypeArr[0]);
   const [dayMonthOrYear, setDayMonthOrYear] = useState<TimeFrameTypes>((sessionStorage.getItem('monthOrYearStat') as TimeFrameTypes) ?? 'month');
 
@@ -46,24 +48,18 @@ const Stats: React.FC = () => {
   const foundStats = useMemo(() => vehicleStats.find((el: IStatsObj) => el.systemKey === selectedStat), [vehicleStats, selectedStat]) as IStatsObj;
   // const monthlyStats = useMemo(() => statsSelectors.getMonthlyStats(foundStats), [foundStats]);
 
-  // move these to a more general location for other files to use
-  const backgroundColor = useMemo(() => ['rgba(54, 162, 235, 0.4)', 'rgba(153, 102, 255, 0.4)', 'rgba(75, 192, 192, 0.4)', 'rgba(201, 203, 207, 0.4)', 'rgba(255, 99, 132, 0.4)', 'rgba(255, 159, 64, 0.4)', 'rgba(255, 205, 86, 0.4)'], []);
-
-  // move these to a more general location for other files to use
-  const borderColor = useMemo(() => ['rgb(54, 162, 235)', 'rgb(153, 102, 255)', 'rgb(75, 192, 192)', 'rgb(201, 203, 207)', 'rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)'], []);
-
-  const shapedData = useMemo(() => {
+  const shapedData: ChartData<'bar', number[], unknown> | {} = useMemo(() => {
     if (foundStats)
       switch (dayMonthOrYear) {
         case 'year':
-          return statsSelectors.getYearlyStats(foundStats);
+          return statsSelectors.getYearlyStats(foundStats, rgbaColors, colors);
         case 'month':
-          return statsSelectors.getMonthlyStats(foundStats, backgroundColor, borderColor);
+          return statsSelectors.getMonthlyStats(foundStats, rgbaColors, colors);
         default:
           return statsSelectors.getDailyStats(foundStats);
       }
     return {};
-  }, [backgroundColor, borderColor, dayMonthOrYear, foundStats]);
+  }, [dayMonthOrYear, foundStats]);
 
   return (
     <Row>
@@ -118,7 +114,7 @@ const Stats: React.FC = () => {
             </ButtonGroup>
             {vehicleStats.length > 0 && (
               <BarGraph
-                data={shapedData}
+                data={shapedData as ChartData<'bar', number[], unknown>}
                 unit={foundStats?.['unit'] ?? ''}
                 style={{
                   height: 'calc(var(--vh, 1vh) * 70)',

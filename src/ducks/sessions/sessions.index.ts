@@ -19,17 +19,17 @@ export interface SessionQuery {
 
 export interface ISession {
   _id: string;
-  dataPoints: [string];
+  dataPoints: string[];
   createdAt: Date | string;
   updatedAt: Date | string;
   vehicle: string;
   startLocation: {
     type: string;
-    coordinates: [number, number];
+    coordinates: number[];
   };
   endLocation: {
     type: string;
-    coordinates: [number, number];
+    coordinates: number[];
   };
 }
 
@@ -72,24 +72,24 @@ export const actions = {
   requestLogs: (value: Record<any, any>): Action => ({ type: ActionTypes.REQUEST_LOGS, payload: value }),
   requestSessions: (value: SessionQuery): Action => ({ type: ActionTypes.REQUEST_SESSIONS, payload: value }),
   requestSessionById: (id: string): Action => ({ type: ActionTypes.REQUEST_SESSION_BY_ID, payload: { id } }),
-  setSessions: (vehicle: string, sessions: Array<any>): Action => ({ type: ActionTypes.SET_SESSIONS, payload: { vehicle, sessions } }),
-  setLogs: (vehicle: string, date: string, logs: Array<any>): Action => ({ type: ActionTypes.SET_LOGS, payload: { vehicle, date, logs } }),
+  setSessions: (vehicle: string, sessions: any[]): Action => ({ type: ActionTypes.SET_SESSIONS, payload: { vehicle, sessions } }),
+  setLogs: (vehicle: string, date: string, logs: any[]): Action => ({ type: ActionTypes.SET_LOGS, payload: { vehicle, date, logs } }),
   setSessionById: (value: Record<any, any>): Action => ({ type: ActionTypes.SET_SESSION_BY_ID, payload: value }),
   setSelectedSession: (value: string): Action => ({ type: ActionTypes.SET_SELECTED_SESSION, payload: value }),
   setSessionsError: (value: boolean): Action => ({ type: ActionTypes.SET_SESSIONS_ERROR, payload: value }),
   setSingleSessionsError: (value: string): Action => ({ type: ActionTypes.SET_SINGLE_SESSIONS_ERROR, payload: value }),
   removeSingleSessionsError: (value: string): Action => ({ type: ActionTypes.REMOVE_SINGLE_SESSIONS_ERROR, payload: value }),
   setPageOption: (key: string, value: number): Action => ({ type: ActionTypes.SET_TABLE_OPTION, payload: { key, value } }),
-  setSort: (value: Array<any>): Action => ({ type: ActionTypes.SET_SORT, payload: value }),
+  setSort: (value: any[]): Action => ({ type: ActionTypes.SET_SORT, payload: value }),
   socketUpdate: (value: Record<any, any>): Action => ({ type: ActionTypes.SOCKET_UPDATE, payload: value }),
 };
 
 /* ===== SELECTORS ===== */
 export const selectors = {
   selectedSession: (id: string, sessions: Record<any, any>) => sessions[id],
-  getSessions: (idsArr: string[], sessions: Record<string, Array<ISession>>) => {
+  getSessions: (idsArr: string[], sessions: Record<string, ISession[]>) => {
     return idsArr
-      .map((id: string) => sessions[id])
+      ?.map((id: string) => sessions[id])
       .flat()
       .filter((el) => el);
   },

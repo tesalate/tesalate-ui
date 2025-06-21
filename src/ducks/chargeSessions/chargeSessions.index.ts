@@ -4,7 +4,7 @@ import { chargeSessionQuery } from './chargeSessions.api';
 
 export interface IChargeSession {
   _id: string;
-  dataPoints?: [string];
+  dataPoints?: string[];
   createdAt: Date | string;
   __v?: number;
   endDate: Date | string;
@@ -16,11 +16,11 @@ export interface IChargeSession {
   supercharger: { title: string };
   geoJSON: {
     type: string;
-    coordinates: [number, number];
+    coordinates: number[];
   };
   startLocation: {
     type: string;
-    coordinates: [number, number];
+    coordinates: number[];
   };
 }
 
@@ -30,7 +30,7 @@ export interface State {
   sessionData: Record<string, any>;
   selectedSession: string | null;
   chargeSessionsError: boolean;
-  singleChargeSessionsError: Array<string>;
+  singleChargeSessionsError: string[];
   pageIndex: number;
   pageSize: number;
   totalPages: number;
@@ -76,23 +76,23 @@ export enum ActionTypes {
 export const actions = {
   requestChargeSessions: (value: chargeSessionQuery): Action => ({ type: ActionTypes.REQUEST_CHARGE_SESSIONS, payload: value }),
   requestSessionById: (id: string): Action => ({ type: ActionTypes.REQUEST_CHARGE_SESSION_BY_ID, payload: { id } }),
-  setChargeSessions: (vehicle: string, sessions: Array<any>): Action => ({ type: ActionTypes.SET_CHARGE_SESSIONS, payload: { vehicle, sessions } }),
+  setChargeSessions: (vehicle: string, sessions: any[]): Action => ({ type: ActionTypes.SET_CHARGE_SESSIONS, payload: { vehicle, sessions } }),
   setChargeSessionById: (value: Record<any, any>): Action => ({ type: ActionTypes.SET_CHARGE_SESSION_BY_ID, payload: value }),
   setSelectedSession: (value: string): Action => ({ type: ActionTypes.SET_SELECTED_SESSION, payload: value }),
   setChargeSessionsError: (value: boolean): Action => ({ type: ActionTypes.SET_CHARGE_SESSIONS_ERROR, payload: value }),
   setSingleChargeSessionsError: (value: string): Action => ({ type: ActionTypes.SET_SINGLE_CHARGE_SESSIONS_ERROR, payload: value }),
   removeSingleChargeSessionsError: (value: string): Action => ({ type: ActionTypes.REMOVE_SINGLE_CHARGE_SESSIONS_ERROR, payload: value }),
   setPageOption: (key: string, value: number): Action => ({ type: ActionTypes.SET_TABLE_OPTION, payload: { key, value } }),
-  setSort: (value: Array<any>): Action => ({ type: ActionTypes.SET_SORT, payload: value }),
+  setSort: (value: any[]): Action => ({ type: ActionTypes.SET_SORT, payload: value }),
   socketUpdate: (value: Record<any, any>): Action => ({ type: ActionTypes.SOCKET_UPDATE, payload: value }),
 };
 
 /* ===== SELECTORS ===== */
 export const selectors = {
   selectedChargeSession: (id: string, sessions: Record<any, any>) => sessions[id],
-  getChargeSessions: (idsArr: string[], sessions: Record<string, Array<IChargeSession>>) => {
+  getChargeSessions: (idsArr: string[], sessions: Record<string, IChargeSession[]>) => {
     return idsArr
-      .map((id: string) => sessions[id])
+      ?.map((id: string) => sessions[id])
       .flat()
       .filter((el) => el);
   },
@@ -116,7 +116,7 @@ const reducer = (state: State = initialState, action: Action) => {
     case ActionTypes.SET_TABLE_OPTION:
       return { ...state, [action.payload.key]: action.payload.value };
     case ActionTypes.SET_SORT:
-      const sort: Array<any> = [];
+      const sort: any[] = [];
       action.payload.forEach((header: Record<any, any>) => {
         if (header.isSorted) {
           sort.push({ id: header.id, desc: header.isSortedDesc });
@@ -135,7 +135,7 @@ const reducer = (state: State = initialState, action: Action) => {
       }
       return {
         ...state,
-        sessions: { ...state.sessions, [action.payload.vehicle]: sess.map((s: IChargeSession) => s) },
+        sessions: { ...state.sessions, [action.payload.vehicle]: sess?.map((s: IChargeSession) => s) },
         sessionData: {
           ...state.sessionData,
           [action.payload._id]: action.payload,

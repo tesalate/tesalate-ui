@@ -41,6 +41,7 @@ const LogsPage = lazy(() => import('../LogbookPage/LogbookPage'));
 const Stats = lazy(() => import('../StatsPage/StatsPage'));
 const Records = lazy(() => import('../Records/Records'));
 const MapPage = lazy(() => import('../MapPage/MapPage'));
+const TeslaCallback = lazy(() => import('../TeslaCallback/TeslaCallback'));
 
 function ErrorFallback({ error }: { error: { message: string } }) {
   return (
@@ -170,6 +171,9 @@ const App: React.FC = () => {
                 </ProtectedRoute>
                 <ProtectedRoute exact path="/settings/:tab?">
                   <Settings />
+                </ProtectedRoute>
+                <ProtectedRoute exact path="/auth/callback">
+                  <TeslaCallback />
                 </ProtectedRoute>
                 <ProtectedRoute exact path="/">
                   <HomePage />

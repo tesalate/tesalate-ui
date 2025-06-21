@@ -61,9 +61,11 @@ const LogbookPage: React.FC = () => {
       <Row className="d-flex justify-space-between mx-0 p-0 mb-2">
         <Col className="m-0 p-0">
           {!disableDayAfter && (
-            <Button size={'sm'} variant={'link'} as={Link} to={`/logs/${dayAfter}`} style={{ textDecoration: 'none' }}>
-              {'<'} {dayAfter}
-            </Button>
+            <Link to={`/logs/${dayAfter}`}>
+              <Button size={'sm'} variant={'link'} style={{ textDecoration: 'none' }}>
+                {'<'} {dayAfter}
+              </Button>
+            </Link>
           )}
         </Col>
         <Col className="mx-auto text-center">
@@ -78,9 +80,11 @@ const LogbookPage: React.FC = () => {
           </small>
         </Col>
         <Col className="m-0 p-0">
-          <Button className="float-end" size={'sm'} variant={'link'} as={Link} to={`/logs/${dayBefore}`} style={{ textDecoration: 'none' }}>
-            {dayBefore} {'>'}
-          </Button>
+          <Link to={`/logs/${dayBefore}`}>
+            <Button className="float-end" size={'sm'} variant={'link'} style={{ textDecoration: 'none' }}>
+              {dayBefore} {'>'}
+            </Button>
+          </Link>
         </Col>
       </Row>
       <Row>

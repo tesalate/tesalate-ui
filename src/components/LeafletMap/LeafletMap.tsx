@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, FeatureGroup, Marker, Popup, GeoJSON, useMap, /*ZoomControl,*/ LayersControl } from 'react-leaflet';
-import L, { divIcon } from 'leaflet';
+import { divIcon } from 'leaflet';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/reducers';
 import { actions as completeDataPointsActions } from '../../ducks/completeDataPoints/completeDataPoints.index';
@@ -15,7 +15,6 @@ import { mapPointsToGeoJSON } from './LeafletMapFuncs';
 // IMAGES
 import purpleIcon from '../../assets/dot-purple.png';
 import grayIcon from '../../assets/dot-gray.png';
-import teslaIcon from '../../assets/model_three.png';
 
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import RangeSlider from 'react-bootstrap-range-slider';
@@ -30,8 +29,11 @@ import { usePreloadImages } from '../../utils/customHooks';
 // import 'leaflet/dist/leaflet.css';
 import { selectors as vehicleSelectors } from '../../ducks/vehicles/vehicles.index';
 
+import { colors, rgbaColors } from '../../containers/StatsPage/colors';
+import vehicleIcon from './vehicleIcon';
+
 export interface IBreadCrumbProps {
-  data: Array<IMapPoint>;
+  data: IMapPoint[];
   style: Record<any, any>;
   loading: boolean;
   theme: UIState['theme'];
@@ -45,7 +47,7 @@ export interface IBreadCrumbProps {
 }
 
 const LeafletMap = (props: IBreadCrumbProps) => {
-  const preload = [purpleIcon, grayIcon, teslaIcon];
+  const preload = [purpleIcon, grayIcon];
   usePreloadImages(preload);
 
   const dispatch = useDispatch();
@@ -60,7 +62,7 @@ const LeafletMap = (props: IBreadCrumbProps) => {
   const drivePage = location.pathname.includes('/drive-sessions');
 
   const {
-    completeDataPointsState: { dataPoints },
+    completeDataPointsState: { dataPoints, mostRecent },
     vehicles,
     distanceBetween,
     isMobile,
@@ -68,6 +70,7 @@ const LeafletMap = (props: IBreadCrumbProps) => {
   } = useSelector(({ completeDataPointsState, uiState, vehiclesState }: RootState) => ({
     completeDataPointsState: {
       dataPoints: completeDataPointsState.dataPoints,
+      mostRecent: completeDataPointsState.mostRecent,
     },
     distanceBetween: uiState.map.distanceBetween,
     vehicles: vehiclesState['vehicles'],
@@ -90,18 +93,7 @@ const LeafletMap = (props: IBreadCrumbProps) => {
 
   const currentVehicles = useMemo(() => vehicleSelectors.getSelectedVehicles(vehicles), [vehicles]);
 
-  const modelThreeIcon = useMemo(
-    () =>
-      new L.Icon({
-        iconUrl: teslaIcon,
-        popupAnchor: [0, 0],
-        iconSize: [3 * 11, 4 * 11],
-      }),
-    []
-  );
-
   const onMarkerClick = (_id: string, vehicle: string) => {
-    console.log('WHAT: ', { _id, vehicle, mapPoints });
     setSelectedPointId({ _id, vehicle });
   };
 
@@ -168,7 +160,7 @@ const LeafletMap = (props: IBreadCrumbProps) => {
     const map = useMap();
     map.whenReady(() => {
       // ONLY SET BOUNDS WHEN THE PAGE FIRST LOADS
-      if (bounds.length >= 1 && (firstLoadRef.current !== bounds.length || sessionRef.current !== props._id)) {
+      if (bounds?.length >= 1 && (firstLoadRef.current !== bounds.length || sessionRef.current !== props._id)) {
         firstLoadRef.current = bounds.length;
         sessionRef.current = props._id;
         if (home) {
@@ -217,9 +209,9 @@ const LeafletMap = (props: IBreadCrumbProps) => {
                 data={geoJSONData as any}
                 style={(feature: any): any => {
                   if (feature.properties.id === 0) {
-                    return { color: 'rgb(54, 162, 235)', fillColor: 'rgba(54, 162, 235, 0.4)' };
+                    return { color: colors[0], fillColor: rgbaColors[0] };
                   } else {
-                    return { color: 'rgba(153, 102, 255)', fillColor: 'rgba(153, 102, 255, 0.4)' };
+                    return { color: colors[1], fillColor: rgbaColors[1] };
                   }
                 }}
                 onEachFeature={(feature, layer): any => {
@@ -232,6 +224,7 @@ const LeafletMap = (props: IBreadCrumbProps) => {
           }
           {mapPoints.map((_position, idx) => {
             const current = _position['dataPoints'][0];
+
             const PopupComp = (
               <Popup key={`popup-${current._id}`} minWidth={200} maxWidth={860}>
                 {!(dataPoints as { [key: string]: {} })[current._id] && current._id === selectedPointId._id ? (
@@ -240,7 +233,7 @@ const LeafletMap = (props: IBreadCrumbProps) => {
                     <Spinner as="span" animation="border" role="status" aria-hidden="true" />
                   </div>
                 ) : null}
-                {(dataPoints as { [key: string]: {} })[current._id] && current._id === selectedPointId._id ? LeafletPopupData({ ...(dataPoints as { [key: string]: {} })[current._id], vehicle: currentVehicles[0], home }) : null}
+                {(dataPoints as { [key: string]: {} })[current._id] && current._id === selectedPointId._id ? LeafletPopupData({ ...dataPoints[current._id], vehicle: currentVehicles[0], home }) : null}
               </Popup>
             );
 
@@ -253,6 +246,10 @@ const LeafletMap = (props: IBreadCrumbProps) => {
               marker.setRotationOrigin('center center');
             }
 
+            // THIS IS BAD
+            const dataPointId = mostRecent?.[_position.vehicle] ?? current?._id;
+            const icon = vehicleIcon(dataPoints?.[dataPointId]?.vehicle_config);
+
             return (
               <FeatureGroup key={`fg-${current._id}`}>
                 {idx === 0 ? (
@@ -262,7 +259,8 @@ const LeafletMap = (props: IBreadCrumbProps) => {
                     }}
                     key={`marker-${current._id}`}
                     position={[current.drive_state.latitude, current.drive_state.longitude]}
-                    icon={modelThreeIcon}
+                    // icon={vehicleIcon((dataPoints as { [key: string]: { vehicle_config: { car_type: string; exterior_color: string } } })?.[current?._id]?.vehicle_config)}
+                    icon={icon}
                     eventHandlers={{ click: () => onMarkerClick(current._id, currentVehicles[0]) }}
                   >
                     {PopupComp}

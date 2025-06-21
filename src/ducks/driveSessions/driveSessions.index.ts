@@ -6,9 +6,9 @@ export interface IDriveSession {
   _id: string;
   endLocation: {
     type: string;
-    coordinates: [number, number];
+    coordinates: number[];
   };
-  dataPoints: [string];
+  dataPoints: string[];
   maxSpeed: number;
   maxPower: number;
   maxRegen: number;
@@ -17,7 +17,7 @@ export interface IDriveSession {
   vid: string;
   startLocation: {
     type: string;
-    coordinates: [number, number];
+    coordinates: number[];
   };
   startDate: Date | string;
   endDate: Date | string;
@@ -30,7 +30,7 @@ export interface State {
   sessions: Record<string, any>;
   sessionData: Record<string, any>;
   selectedSession: string | null;
-  singleDriveSessionsError: Array<string>;
+  singleDriveSessionsError: string[];
   driveSessionsError: boolean;
   pageIndex: number;
   pageSize: number;
@@ -77,23 +77,23 @@ export enum ActionTypes {
 export const actions = {
   requestDriveSessions: (value: driveSessionQuery): Action => ({ type: ActionTypes.REQUEST_DRIVE_SESSIONS, payload: value }),
   requestSessionById: (id: string): Action => ({ type: ActionTypes.REQUEST_DRIVE_SESSION_BY_ID, payload: { id } }),
-  setDriveSessions: (vehicle: string, sessions: Array<any>): Action => ({ type: ActionTypes.SET_DRIVE_SESSIONS, payload: { vehicle, sessions } }),
+  setDriveSessions: (vehicle: string, sessions: any[]): Action => ({ type: ActionTypes.SET_DRIVE_SESSIONS, payload: { vehicle, sessions } }),
   setDriveSessionById: (value: Record<any, any>): Action => ({ type: ActionTypes.SET_DRIVE_SESSION_BY_ID, payload: value }),
   setSelectedSession: (value: string): Action => ({ type: ActionTypes.SET_SELECTED_SESSION, payload: value }),
   setDriveSessionsError: (value: boolean): Action => ({ type: ActionTypes.SET_DRIVE_SESSIONS_ERROR, payload: value }),
   setSingleDriveSessionsError: (value: string): Action => ({ type: ActionTypes.SET_SINGLE_DRIVE_SESSIONS_ERROR, payload: value }),
   removeSingleDriveSessionsError: (value: string): Action => ({ type: ActionTypes.REMOVE_SINGLE_DRIVE_SESSIONS_ERROR, payload: value }),
   setPageOption: (key: string, value: number): Action => ({ type: ActionTypes.SET_TABLE_OPTION, payload: { key, value } }),
-  setSort: (value: Array<any>): Action => ({ type: ActionTypes.SET_SORT, payload: value }),
+  setSort: (value: any[]): Action => ({ type: ActionTypes.SET_SORT, payload: value }),
   socketUpdate: (value: Record<any, any>): Action => ({ type: ActionTypes.SOCKET_UPDATE, payload: value }),
 };
 
 /* ===== SELECTORS ===== */
 export const selectors = {
   selectedDriveSession: (id: string, sessions: Record<any, any>) => sessions[id],
-  getDriveSessions: (idsArr: string[], sessions: Record<string, Array<IDriveSession>>) => {
+  getDriveSessions: (idsArr: string[], sessions: Record<string, IDriveSession[]>) => {
     return idsArr
-      .map((id: string) => sessions[id])
+      ?.map((id: string) => sessions[id])
       .flat()
       .filter((el) => el);
   },
@@ -117,7 +117,7 @@ const reducer = (state: State = initialState, action: Action) => {
     case ActionTypes.SET_TABLE_OPTION:
       return { ...state, [action.payload.key]: action.payload.value };
     case ActionTypes.SET_SORT:
-      const sort: Array<any> = [];
+      const sort: any[] = [];
       action.payload.forEach((header: Record<any, any>) => {
         if (header.isSorted) {
           sort.push({ id: header.id, desc: header.isSortedDesc });
@@ -136,7 +136,7 @@ const reducer = (state: State = initialState, action: Action) => {
       }
       return {
         ...state,
-        sessions: { ...state.sessions, [action.payload.vehicle]: sess.map((s: IDriveSession) => s) },
+        sessions: { ...state.sessions, [action.payload.vehicle]: sess?.map((s: IDriveSession) => s) },
         sessionData: {
           ...state.sessionData,
           [action.payload._id]: action.payload,

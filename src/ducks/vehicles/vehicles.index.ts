@@ -33,7 +33,7 @@ export interface updateVehicleBody {
 /* ===== INTERFACE_DEFINITION =====*/
 export interface State {
   vehicles: IVehicle[];
-  selectedVehicles: [];
+  selectedVehicles: any[];
   vehiclesError: boolean;
 }
 
@@ -70,7 +70,7 @@ export const actions = {
 
 /* ===== SELECTORS ===== */
 export const selectors = {
-  getSelectedVehicles: (vehicles: IVehicle[]) => vehicles.filter((vehicle) => vehicle.selected).map((vehicle) => vehicle._id),
+  getSelectedVehicles: (vehicles: IVehicle[]) => vehicles.filter((vehicle) => vehicle.selected)?.map((vehicle) => vehicle._id),
   getVehicleName: (vehicles: IVehicle[], _id: string) => vehicles.find((vehicle) => vehicle._id === _id)?.display_name ?? '',
 };
 
@@ -92,7 +92,7 @@ const reducer = (state: State = initialState, action: Action) => {
     case ActionTypes.SET_SELECTED_VEHICLES:
       return {
         ...state,
-        vehicles: state.vehicles.map((vehicle) => {
+        vehicles: state.vehicles?.map((vehicle) => {
           return { ...vehicle, selected: vehicle._id === action.payload };
         }),
       };

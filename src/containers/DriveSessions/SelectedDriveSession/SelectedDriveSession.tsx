@@ -12,11 +12,11 @@ interface SelectedSessionData {
   theme: UIState['theme'];
   loading: boolean;
   error: boolean;
-  errors: Array<string>;
+  errors: string[];
   isConnected: boolean | null;
 }
 
-const filterData = (data: Array<any>) => {
+const filterData = (data: any[]) => {
   const val = data.length;
   if (val <= 250) {
     return data;

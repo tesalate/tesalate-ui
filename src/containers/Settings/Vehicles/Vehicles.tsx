@@ -75,6 +75,7 @@ const Vehicles: React.FC<VehiclesProps> = ({ vehicles = [], handleClick, loading
                       />
                     )}
                     {['display_name', 'option_codes', 'vin', '_id'].map((key: string, idx: number) => {
+                      console.log('VEHICLE', vehicle);
                       const cardInfo = {
                         text: key === '_id' ? <Moment format={'MMM MM YYYY'}>{objectIdToCreationDate(vehicle[key])}</Moment> : key === 'option_codes' ? carTypeMap(vehicle?.option_codes) : vehicle[key],
                         label: (systemNameToLabelMap as any)[key] ?? key.split('_').join(' '),

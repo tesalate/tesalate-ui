@@ -1,18 +1,18 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './containers/App/App';
 import * as serviceWorker from './serviceWorker';
 import store, { persistor } from './redux/store';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { PersistGate } from 'redux-persist/integration/react'
+import { PersistGate } from 'redux-persist/integration/react';
 
 // define any global interfaces here
 declare global {
   interface Window {
     Cypress: any;
-    store  : any;
+    store: any;
     __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any;
   }
 }
@@ -26,18 +26,16 @@ if (window.Cypress) {
   window.store = store;
 }
 
-
-ReactDOM.render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
           <App />
-        </BrowserRouter> 
+        </BrowserRouter>
       </PersistGate>
     </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change
@@ -54,4 +52,4 @@ serviceWorker.register({
     });
   },
 });
-process.send && process.send('ready')
+process.send && process.send('ready');

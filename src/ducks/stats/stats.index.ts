@@ -2,10 +2,10 @@
 import { Action } from '../types';
 
 export const StatTypeArr = ['chargeStats', 'driveStats', 'mapPointStats'] as const;
-export type StatTypes = typeof StatTypeArr[number];
+export type StatTypes = (typeof StatTypeArr)[number];
 
 export const TimeFrameArr = ['month', 'year'] as const;
-export type TimeFrameTypes = typeof TimeFrameArr[number];
+export type TimeFrameTypes = (typeof TimeFrameArr)[number];
 export type resultMetric = {
   _id: { day: number; month: number; year: number };
   value: number;
@@ -13,7 +13,7 @@ export type resultMetric = {
 export interface IStatsObj {
   displayName: string;
   systemKey: string;
-  results: [resultMetric];
+  results: resultMetric[];
   vehicleId: number;
   vehicle: string;
   displayOrder: number;
@@ -26,14 +26,14 @@ const monthArr = Array.from({ length: 12 }, (_v, i) => i);
 
 /* ===== INTERFACE_DEFINITION =====*/
 export interface State {
-  statTypes: Array<StatTypes>;
+  statTypes: StatTypes[];
   stats: any;
   statsError: boolean;
 }
 
 /* ===== STATE_DEFINITION ===== */
 export const initialState: State = {
-  statTypes: [...StatTypeArr],
+  statTypes: [...(StatTypeArr as any)],
   stats: {},
   statsError: false,
 };
@@ -51,18 +51,18 @@ export enum ActionTypes {
 export const actions = {
   requestStats: (): Action => ({ type: ActionTypes.REQUEST_STATS }),
   requestStatsTypes: (): Action => ({ type: ActionTypes.REQUEST_STATS_TYPES }),
-  setStats: (value: { vehicle: string; results: Array<IStatsObj['results']>; systemKey: string }): Action => ({ type: ActionTypes.SET_STATS, payload: value }),
-  setStatsTypes: (value: Array<Record<any, any>>): Action => ({ type: ActionTypes.SET_STATS_TYPES, payload: value }),
+  setStats: (value: { vehicle: string; results: IStatsObj['results'][]; systemKey: string }): Action => ({ type: ActionTypes.SET_STATS, payload: value }),
+  setStatsTypes: (value: Record<any, any>[]): Action => ({ type: ActionTypes.SET_STATS_TYPES, payload: value }),
   setStatsError: (value: boolean): Action => ({ type: ActionTypes.SET_STATS_ERROR, payload: value }),
 };
 
 /* ===== SELECTORS ===== */
 export const selectors = {
-  getStatsToDisplay: (stats: Array<IStatsObj>, vehicle: string) => stats.filter((el: IStatsObj) => el.vehicle === vehicle).sort((a, b) => a.displayOrder - b.displayOrder),
+  getStatsToDisplay: (stats: IStatsObj[], vehicle: string) => stats.filter((el: IStatsObj) => el.vehicle === vehicle).sort((a, b) => a.displayOrder - b.displayOrder),
   getDailyStats: (stats: IStatsObj) => {
     return {
       labels: [Array.from({ length: 31 }, (_, i) => i + 1)],
-      datasets: monthArr.map((el: number) => {
+      datasets: monthArr?.map((el: number) => {
         return {
           label: new Date(2020, el, 1).toLocaleString('en-us', { month: 'long' }),
           data: stats.results.filter((metric) => metric._id.month === el + 1).map((metric: resultMetric) => metric.value),
@@ -104,7 +104,7 @@ export const selectors = {
       }),
     };
   },
-  getYearlyStats: (stats: IStatsObj) => {
+  getYearlyStats: (stats: IStatsObj, backgroundColor: string[], borderColor: string[]) => {
     const data = stats.results.reduce((acc: any, curr: resultMetric) => {
       const {
         _id: { year },
@@ -121,6 +121,8 @@ export const selectors = {
           label: stats['displayName'],
           data: Object.values(data),
           borderWidth: 1,
+          backgroundColor: backgroundColor[0],
+          borderColor: borderColor[0],
         },
       ],
     };

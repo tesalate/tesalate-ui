@@ -8,8 +8,8 @@ export const getCompleteDataPoint = async (id: string, vid: string) => {
   return response;
 };
 
-export const getMostRecentDataPoint = async (vid: string) => {
-  let url = `${apiEndpoint}/?sortBy=$natural:desc&limit=1&vehicle=${vid}`;
+export const getDocCount = async (vid: string) => {
+  let url = `${apiEndpoint}/docCount?vehicle=${vid}`;
   const response = await http.get(url);
   return response;
 };

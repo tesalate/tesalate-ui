@@ -14,7 +14,11 @@ export type LatLongObject = 'latitude' | 'longitude' | 'heading';
 
 export interface IMapPoint {
   _id: string;
-  dataPoints: Array<{ drive_state: Record<LatLongObject, number>; _id: string }>;
+  dataPoints: {
+    vehicle_config: any;
+    drive_state: Record<LatLongObject, number>;
+    _id: string;
+  }[];
   latLongString: string;
   visitCount: number;
   __v: number;
@@ -22,7 +26,7 @@ export interface IMapPoint {
   lastModified: string | Date;
   geoJSON: {
     type: 'Polygon' | 'Point';
-    coordinates: Array<Array<Array<Number>>>;
+    coordinates: number[];
   };
   vehicle: string;
 }
@@ -52,7 +56,7 @@ export enum ActionTypes {
 /* ===== ACTION_CREATORS ===== */
 export const actions = {
   requestMapPoints: (filterBool: boolean, vid: string, km?: number): Action => ({ type: ActionTypes.REQUEST_MAP_POINTS, payload: { filterBool, vid, km } }),
-  setMapPoints: (data: Array<any>, vehicle: string, filterBool?: boolean): Action => ({ type: ActionTypes.SET_MAP_POINTS, payload: { data, filterBool, vehicle } }),
+  setMapPoints: (data: any[], vehicle: string, filterBool?: boolean): Action => ({ type: ActionTypes.SET_MAP_POINTS, payload: { data, filterBool, vehicle } }),
   setMapPointsLoading: (value: boolean): Action => ({ type: ActionTypes.SET_MAP_POINTS_LOADING, payload: value }),
   setMapPointsError: (value: boolean): Action => ({ type: ActionTypes.SET_MAP_POINTS_ERROR, payload: value }),
   socketUpdate: (value: Record<any, any>): Action => ({ type: ActionTypes.SOCKET_UPDATE, payload: value }),
@@ -60,7 +64,7 @@ export const actions = {
 
 /* ===== SELECTORS ===== */
 export const selectors = {
-  filterMapPointsByDateRange: (mapPoints: Array<IMapPoint>, keySelector: 'lastModified' | 'createdAt' = 'lastModified', startDate?: number | string | Date | undefined, endDate?: number | string | Date | undefined) =>
+  filterMapPointsByDateRange: (mapPoints: IMapPoint[], keySelector: 'lastModified' | 'createdAt' = 'lastModified', startDate?: number | string | Date | undefined, endDate?: number | string | Date | undefined) =>
     mapPoints.filter((a: IMapPoint) => {
       if (!startDate && !endDate) return true;
       if (!startDate) startDate = new Date('1970-01-01');
@@ -70,7 +74,7 @@ export const selectors = {
       endDate = new Date(endDate);
       return date >= startDate && date <= endDate;
     }),
-  getMapData: (idsArr: string[], data: Record<string, Array<IMapPoint>>) => {
+  getMapData: (idsArr: string[], data: Record<string, IMapPoint[]>) => {
     return idsArr
       .map((id: string) => data[id])
       .flat()

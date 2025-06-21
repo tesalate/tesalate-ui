@@ -11,3 +11,8 @@ export const refreshTeslaAccount = async () => {
   let url = `${apiEndpoint}/refresh`;
   return await http.put(`${url}`);
 };
+
+export const sendCode = async (code: string) => {
+  let url = `${apiEndpoint}/login`;
+  return await http.post(`${url}`, { code });
+};

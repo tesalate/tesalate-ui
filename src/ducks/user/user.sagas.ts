@@ -26,7 +26,7 @@ export function* registerUser(action: any) {
     yield put(userActions.setUser(data));
 
     window.location.assign('/send-verification-email');
-  } catch (error) {
+  } catch (error: any) {
     // handle ui effects
     if (error.response.data.message) {
       console.log('HMMMM', error.response.data.message);
@@ -53,8 +53,9 @@ export function* fetchLogin(action: any) {
     yield put(uiActions.removeComponentLoading(loadingName));
     yield put(userActions.setUser(data));
     yield put(vehiclesActions.setVehicles(data?.vehicles));
+    yield put(vehiclesActions.requestVehicles());
     yield put(teslaAccountActions.setTeslaAccount(data?.teslaAccount));
-  } catch (error) {
+  } catch (error: any) {
     // handle ui effects
     console.log('FETCHLOGIN ERROR', error.message);
     yield put(userActions.setUserError(true));
@@ -117,7 +118,7 @@ export function* fetchMe(action: any) {
       yield put(userActions.setUser(data));
       yield put(userActions.setLoggedIn(!!data));
     }
-  } catch (err) {
+  } catch (err: any) {
     // handle ui effects
     if (err.message !== 'No token provided.') yield put(userActions.setUserError(true));
   } finally {

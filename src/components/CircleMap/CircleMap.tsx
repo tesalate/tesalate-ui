@@ -1,16 +1,17 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { MapContainer, /*CircleMarker, Tooltip,*/ TileLayer, Marker, Popup, useMapEvents, useMap, LayersControl } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-markercluster';
+import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import Moment from 'react-moment';
 import { useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { useQuery } from '../../utils/customHooks';
 import { IChargeSession } from '../../ducks/chargeSessions/chargeSessions.index';
+import { LatLngBoundsExpression, LatLngBoundsLiteral, LatLngTuple } from 'leaflet';
 require('react-leaflet-markercluster/dist/styles.min.css');
 
 interface ICircleProps {
-  mapPoints: Array<IChargeSession>;
+  mapPoints: IChargeSession[];
   style?: Record<any, any>;
   loading: boolean;
   theme: string | undefined;
@@ -25,11 +26,11 @@ const CircleMap = (props: ICircleProps) => {
   const { mapPoints, theme } = props;
   const query = useQuery();
   const [zoomLevel, setZoomLevel] = useState(Number(query.get('zoom')) || 4);
-  const [center, setCenter] = useState(
-    query
+  const [center, setCenter] = useState<LatLngTuple>(
+    (query
       .get('center')
       ?.split(',')
-      .map((num: string) => parseFloat(num)) ?? [40, -100]
+      ?.map((num: string) => parseFloat(num)) ?? [40, -100]) as LatLngTuple
   );
   const location = useLocation();
   const history = useHistory();
@@ -39,7 +40,7 @@ const CircleMap = (props: ICircleProps) => {
     border: 'var(--main-border-style)',
   };
 
-  const bounds: Array<[number, number]> = [];
+  const bounds: LatLngBoundsLiteral = [];
 
   const data = useMemo(
     () =>
@@ -47,7 +48,7 @@ const CircleMap = (props: ICircleProps) => {
         let { startLocation = { coordinates: [] }, _id, supercharger, createdAt, maxChargeRate, energyAdded } = dataItem;
         let { coordinates } = startLocation;
         if (supercharger?.title && !supercharger?.title.toLowerCase().includes('supercharger')) supercharger.title += ' Supercharger';
-        const [a, b] = coordinates as [number, number];
+        const [a, b] = coordinates as number[];
         if (a && b) {
           bounds.push([b, a]);
           return (
@@ -75,7 +76,7 @@ const CircleMap = (props: ICircleProps) => {
   );
 
   const _addQuery = useCallback(
-    (a, b) => {
+    (a: string, b: string) => {
       const addQuery = (key: string, value: string) => {
         let pathname = location.pathname;
         // returns path: '/app/books'
@@ -119,7 +120,7 @@ const CircleMap = (props: ICircleProps) => {
 
     map.whenReady(() => {
       if (bounds?.length > 0) {
-        map.flyToBounds(bounds);
+        map.flyToBounds(bounds as LatLngBoundsExpression);
       }
     });
 
@@ -133,16 +134,7 @@ const CircleMap = (props: ICircleProps) => {
   }
 
   return (
-    <MapContainer
-      style={{ height: 'calc(var(--vh, 1vh) * 80)', width: '100%', opacity: '0.9', ...style }}
-      zoom={zoomLevel}
-      maxZoom={18}
-      center={center as [number, number]}
-      attributionControl={false}
-      bounds={bounds}
-      tap={false}
-      className="mb-2"
-    >
+    <MapContainer style={{ height: 'calc(var(--vh, 1vh) * 80)', width: '100%', opacity: '0.9', ...style }} zoom={zoomLevel} maxZoom={18} center={center} attributionControl={false} bounds={bounds} tap={false} className="mb-2">
       <LayersControl>
         <LayersControl.BaseLayer checked={theme === 'dark'} name="basemaps.dark_all">
           <TileLayer attribution='&copy; <a href="https://{s}.basemaps.cartocdn.comt">basemaps</a> contributors' url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />

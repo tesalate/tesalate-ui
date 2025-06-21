@@ -10,6 +10,7 @@ const carTypeMap = new Proxy(
 );
 
 export default (option_codes: string) => {
+  console.log('OPTION CODES', option_codes);
   /* @ts-ignore */
   return carTypeMap[option_codes?.split(',').filter((el: string) => carTypeMap[el])[0]];
 };

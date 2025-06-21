@@ -26,7 +26,7 @@ export function* fetchMapPoints(action: any) {
       } = yield call(getMapPoints, action.payload.filterBool, action.payload.vid, action.payload.km);
       yield put(mapPointsActions.setMapPoints(results, action.payload.vid, action.payload.filterBool));
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log('FRIIIIIICK', error.message);
     // handle ui effects
     yield put(mapPointsActions.setMapPointsError(true));

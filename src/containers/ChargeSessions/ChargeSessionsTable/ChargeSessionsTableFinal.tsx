@@ -6,11 +6,11 @@ import { actions as chargeSessionActions } from '../../../ducks/chargeSessions/c
 import { timeConversion } from '../../../utils/convert';
 
 interface ChargeSessionsTableProps {
-  sessions: Array<any>;
+  sessions: any[];
   loading: boolean;
   pageSizeFromState: number;
   pageIndexFromState: number;
-  sortBy: Array<Record<any, any>>;
+  sortBy: Record<any, any>[];
   sessionData: Record<any, any>;
   error: boolean;
   totalPages: number;

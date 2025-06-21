@@ -51,9 +51,11 @@ const VerifyModal: React.FC<IModalProps> = ({ theme, loading, requestVerificatio
         </Button>
         {/* </Col> */}
         {/* <Col className="m-0 p-0"> */}
-        <Button size={'sm'} variant={lightTheme ? 'light' : 'dark'} as={Link} to={'/logout'} className="m-1">
-          Log Out
-        </Button>
+        <Link to="/logout">
+          <Button size={'sm'} variant={lightTheme ? 'light' : 'dark'} className="m-1">
+            Log Out
+          </Button>
+        </Link>
         {/* </Col> */}
         {/* </Row> */}
       </Modal.Footer>
